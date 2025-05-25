@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permohonan Kursus</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 95%;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .tahap-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tahap-card {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            width: 400px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .tahap-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .tahap-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #9b59b6;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            margin-bottom: 10px;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .tahap-button:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+        }
+
+        .tahap-button:active {
+            transform: translateY(0);
+        }
+
+        .tahap-tahap {
+            font-weight: 600;
+            font-size: 18px;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .tahap-sijil {
+            font-weight: 600;
+            font-size: 18px;
+            color: #333;
+            margin: 10px 0;
+        }
+
+        .tahap-penerangan {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #ffebee;
+            border-radius: 5px;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .tahap-card {
+                width: 100%;
+                max-width: 400px;
+            }
+
+            .tahap-button {
+                font-size: 14px;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Permohonan Kursus</h2>
+        <div id="errorMessage" class="error"></div>
+        <div class="tahap-list" id="tahapList"></div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAydlHWbNJ2eRsBJfT3i8g9pq58wXkFTfs",
+            authDomain: "spp-2025-53c5c.firebaseapp.com",
+            projectId: "spp-2025-53c5c",
+            storageBucket: "spp-2025-53c5c.appspot.com",
+            messagingSenderId: "308795708142",
+            appId: "1:308795708142:web:4914dd03f26a6adc4c19ff",
+            databaseURL: "https://spp-2025-53c5c-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        const tahapList = document.getElementById('tahapList');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Get uid from URL and store in localStorage as mohon_uid
+        const urlParams = new URLSearchParams(window.location.search);
+        const uid = urlParams.get('uid');
+
+        if (uid) {
+            localStorage.setItem('mohon_uid', uid);
+            loadTahapData(uid);
+        } else {
+            errorMessage.textContent = 'No user ID provided.';
+            errorMessage.style.display = 'block';
+        }
+
+        // Load tahap data
+        function loadTahapData(uid) {
+            const tahapRef = ref(database, `users/${uid}/tahap`);
+            onValue(tahapRef, (snapshot) => {
+                tahapList.innerHTML = '';
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).forEach((tahapId) => {
+                        const tahap = data[tahapId];
+                        const card = document.createElement('div');
+                        card.className = 'tahap-card';
+                        card.innerHTML = `
+                            <button class="tahap-button" data-tahap-id="${tahapId}">${tahap.sijil || 'Unnamed Sijil'}</button>
+                            <div class="tahap-tahap">${tahap.tahap || 'Unnamed Tahap'}</div>
+                            <div class="tahap-sijil">${tahap.sijil || 'Unnamed Sijil'}</div>
+                            <div class="tahap-penerangan">${tahap.penerangan || 'No description'}</div>
+                        `;
+                        tahapList.appendChild(card);
+                    });
+                } else {
+                    errorMessage.textContent = 'No tahap data found.';
+                    errorMessage.style.display = 'block';
+                }
+            }, (error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        }
+
+        // Handle button click to store tahapId and redirect
+        tahapList.addEventListener('click', (e) => {
+            const button = e.target.closest('.tahap-button');
+            if (button) {
+                const tahapId = button.dataset.tahapId;
+                localStorage.setItem('mohon_tahapid', tahapId);
+                window.location.href = 'page2.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Kursus</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 95%;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 28px; /* Increased from 24px */
+            font-weight: 600;
+        }
+
+        .kursus-list {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .kursus-card {
+            background: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            width: 500px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+
+
+        .kursus-nama {
+            font-weight: 600;
+            font-size: 20px; /* Increased from 18px */
+            color: #79428f;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .kursus-nama:hover {
+            color: #9b59b6;
+            transform: translateY(-2px);
+        }
+
+        .kursus-nama strong {
+            font-weight: bold;
+        }
+
+        .kursus-details {
+            display: none;
+            font-size: 16px; /* Increased from 14px */
+            color: #555;
+            line-height: 1.5;
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        .kursus-details.show {
+            display: block;
+        }
+
+        .kursus-details div {
+            margin-bottom: 8px;
+        }
+
+        .kursus-details strong {
+            font-weight: bold;
+        }
+
+        .mohon-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #9b59b6;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px; /* Increased from 16px */
+            cursor: pointer;
+            transition: background 0.3s, transform 0.3s;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .mohon-button:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+        }
+
+        .mohon-button:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #ffebee;
+            border-radius: 5px;
+            display: none;
+            font-size: 16px; /* Increased from implied default */
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .kursus-card {
+                width: 100%;
+                max-width: 400px;
+            }
+
+            .kursus-nama {
+                font-size: 18px; /* Adjusted for mobile */
+            }
+
+            .kursus-details {
+                font-size: 14px; /* Adjusted for mobile */
+            }
+
+            .mohon-button {
+                font-size: 16px; /* Adjusted for mobile */
+                padding: 8px 16px;
+            }
+
+            h2 {
+                font-size: 24px; /* Adjusted for mobile */
+            }
+
+            .error {
+                font-size: 14px; /* Adjusted for mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Pilih Kursus</h2>
+        <div id="errorMessage" class="error"></div>
+        <div class="kursus-list" id="kursusList"></div>
+        
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAydlHWbNJ2eRsBJfT3i8g9pq58wXkFTfs",
+            authDomain: "spp-2025-53c5c.firebaseapp.com",
+            projectId: "spp-2025-53c5c",
+            storageBucket: "spp-2025-53c5c.appspot.com",
+            messagingSenderId: "308795708142",
+            appId: "1:308795708142:web:4914dd03f26a6adc4c19ff",
+            databaseURL: "https://spp-2025-53c5c-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        const kursusList = document.getElementById('kursusList');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Get mohon_uid and mohon_tahapid from localStorage
+        const uid = localStorage.getItem('mohon_uid');
+        const tahapId = localStorage.getItem('mohon_tahapid');
+
+        if (!uid || !tahapId) {
+            errorMessage.textContent = 'Missing user ID or tahap selection.';
+            errorMessage.style.display = 'block';
+        } else {
+            loadKursusData(uid, tahapId);
+        }
+
+        // Load kursus data
+        function loadKursusData(uid, tahapId) {
+            const kursusRef = ref(database, `users/${uid}/tahap/${tahapId}/kursus`);
+            onValue(kursusRef, (snapshot) => {
+                kursusList.innerHTML = '';
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).forEach((kursusId) => {
+                        const kursus = data[kursusId];
+                        const card = document.createElement('div');
+                        card.className = 'kursus-card';
+                        card.innerHTML = `
+                            <div class="kursus-nama" data-kursus-id="${kursusId}"> ${kursus.nama || 'Unnamed Kursus'}</div>
+                            <div class="kursus-details">
+                                <div><strong>Kod :</strong> ${kursus.kod || 'No code'}</div>
+                                <div><strong>Tempoh :</strong> ${kursus.tempoh || 'No duration'}</div>
+                                <div><strong>Syarat Kelayakan :</strong><br> ${kursus.syarat ? kursus.syarat.split(',').join('<br>') : 'No requirements'}</div>
+                                <div><strong>Kurikulum :</strong><br> ${kursus.kurikulum ? kursus.kurikulum.split(',').join('<br>') : 'No curriculum'}</div>
+                                <button class="mohon-button" data-kursus-id="${kursusId}">Mohon</button>
+                            </div>
+                        `;
+                        kursusList.appendChild(card);
+                    });
+                } else {
+                    errorMessage.textContent = 'No kursus data found.';
+                    errorMessage.style.display = 'block';
+                }
+            }, (error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        }
+
+        // Handle nama click to toggle details
+        kursusList.addEventListener('click', (e) => {
+            const nama = e.target.closest('.kursus-nama');
+            const mohonButton = e.target.closest('.mohon-button');
+            
+            if (nama) {
+                const details = nama.nextElementSibling;
+                if (details) {
+                    details.classList.toggle('show');
+                }
+            }
+
+            if (mohonButton) {
+                const kursusId = mohonButton.dataset.kursusId;
+                localStorage.setItem('mohon_kursusid', kursusId);
+                window.location.href = 'page3.html';
+            }
+        });
+    </script>
+</body>
+</html>

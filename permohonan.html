@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permohonan</title>
+    <link rel="stylesheet" href="body.css">
+    <script src="config.js"></script>
+    <style>
+        .container {
+            max-width: 1200px;
+            width: 95%;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #9b59b6;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #ffebee;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f5f0ff;
+            color: #5d3a9e;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        td:nth-child(1) {
+            width: 10px !important;
+        }
+        th:nth-child(1) {
+            width: 10px !important;
+        }
+
+        tr {
+            transition: background 0.2s;
+            cursor: pointer;
+        }
+
+        tr:hover {
+            background: #f9f5ff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        tr:nth-child(even):hover {
+            background-color: #f9f5ff;
+        }
+
+        .scrollable-cell {
+            max-width: 200px;
+            overflow: auto;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 440px) {
+            .container {
+                padding: 15px;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+
+            .button-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="headercontainer">
+        <header class="header">
+            <div class="logo">Permohonan</div>
+            <button class="mobile-menu-btn">☰</button>
+            <nav class="nav">
+                <button class="nav-btn" onclick="window.location.href='tahap.html'">Kursus</button>
+                <button class="nav-btn" onclick="window.location.href='sesi.html'">Pelajar</button>
+                <button class="nav-btn" onclick="window.location.href='permohonan.html'">Permohonan</button>
+                <button class="nav-btn" id="logoutBtn">Log Keluar</button>
+            </nav>
+        </header>
+    </div>
+
+    <div class="container">
+        <h2>Senarai Pemohon</h2>
+        <div id="errorMessage" class="error"></div>
+        <div class="button-group">
+            <button class="btn" id="mohonBtn">Mohon Kursus</button>
+            <button class="btn" id="copyUrlBtn">Copy URL</button>
+        </div>
+        <div class="table-responsive">
+            <table id="pemohonTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Nama</th>
+                        <th>No. Kad Pengenalan</th>
+                        <th>Kursus</th>
+                    </tr>
+                </thead>
+                <tbody id="pemohonTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAydlHWbNJ2eRsBJfT3i8g9pq58wXkFTfs",
+            authDomain: "spp-2025-53c5c.firebaseapp.com",
+            projectId: "spp-2025-53c5c",
+            storageBucket: "spp-2025-53c5c.appspot.com",
+            messagingSenderId: "308795708142",
+            appId: "1:308795708142:web:4914dd03f26a6adc4c19ff",
+            databaseURL: "https://spp-2025-53c5c-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        const mohonBtn = document.getElementById('mohonBtn');
+        const copyUrlBtn = document.getElementById('copyUrlBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const pemohonTableBody = document.getElementById('pemohonTableBody');
+
+        // Navigate to page1.html with uid
+        mohonBtn.addEventListener('click', () => {
+            const uid = localStorage.getItem('uid');
+            if (!uid) {
+                errorMessage.textContent = 'User not logged in.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            window.location.href = `page1.html?uid=${encodeURIComponent(uid)}`;
+        });
+
+        // Copy full URL to clipboard
+        copyUrlBtn.addEventListener('click', async () => {
+            const uid = localStorage.getItem('uid');
+            if (!uid) {
+                errorMessage.textContent = 'User not logged in.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            // Get the current page's URL and replace permohonan.html with page1.html
+            const currentUrl = new URL(window.location.href);
+            currentUrl.pathname = currentUrl.pathname.replace('permohonan.html', 'page1.html');
+            currentUrl.search = `?uid=${encodeURIComponent(uid)}`;
+            const fullUrl = currentUrl.toString();
+            try {
+                await navigator.clipboard.writeText(fullUrl);
+                alert('URL copied to clipboard!');
+            } catch (error) {
+                errorMessage.textContent = 'Failed to copy URL.';
+                errorMessage.style.display = 'block';
+            }
+        });
+
+        // Load pemohon data
+        function loadPemohonData() {
+            const uid = localStorage.getItem('uid');
+            if (!uid) {
+                errorMessage.textContent = 'User not logged in.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            const pemohonRef = ref(database, `users/${uid}/pemohon`);
+            onValue(pemohonRef, (snapshot) => {
+                pemohonTableBody.innerHTML = '';
+                const data = snapshot.val();
+                if (data) {
+                    Object.entries(data).forEach(([pemohonId, pemohon], index) => {
+                        const row = document.createElement('tr');
+                        row.dataset.pemohonId = pemohonId;
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td class="scrollable-cell">${pemohon.nama || 'N/A'}</td>
+                            <td class="scrollable-cell">${pemohon.ic || 'N/A'}</td>
+                            <td class="scrollable-cell">${pemohon.kursus ? `${pemohon.kursus.kod || 'N/A'} ${pemohon.kursus.nama || 'N/A'}` : 'No Kursus'}</td>
+                        `;
+                        pemohonTableBody.appendChild(row);
+                    });
+                } else {
+                    errorMessage.textContent = 'Tiada pemohon.';
+                    errorMessage.style.display = 'block';
+                }
+            }, (error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        }
+
+        // Row click to redirect to permohonandata.html
+        pemohonTableBody.addEventListener('click', (e) => {
+            const row = e.target.closest('tr');
+            if (!row) return;
+            const pemohonId = row.dataset.pemohonId;
+            localStorage.setItem('pemohonId', pemohonId);
+            window.location.href = 'permohonandata.html';
+        });
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                localStorage.removeItem('uid');
+                localStorage.removeItem('tahapId');
+                localStorage.removeItem('sesiId');
+                localStorage.removeItem('pelajarId');
+                localStorage.removeItem('pemohonId');
+                window.location.href = 'sign.html';
+            }).catch((error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        });
+
+        // Mobile menu toggle
+        document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
+            document.querySelector('.nav').classList.toggle('active');
+        });
+
+        // Load pemohon data on page load
+        loadPemohonData();
+    </script>
+</body>
+</html>

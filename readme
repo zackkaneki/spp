@@ -1,0 +1,144 @@
+github
+
+zackkaneki5@gmail.com
+zackkaneki@123
+
+firebase config
+
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyAydlHWbNJ2eRsBJfT3i8g9pq58wXkFTfs",
+    authDomain: "spp-2025-53c5c.firebaseapp.com",
+    projectId: "spp-2025-53c5c",
+    storageBucket: "spp-2025-53c5c.firebasestorage.app",
+    messagingSenderId: "308795708142",
+    appId: "1:308795708142:web:4914dd03f26a6adc4c19ff"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
+
+
+
+authentication
+email and password
+
+
+
+realtime database
+https://spp-2025-53c5c-default-rtdb.asia-southeast1.firebasedatabase.app
+https://spp-2025-53c5c-default-rtdb.asia-southeast1.firebasedatabase.app/
+:
+null
+
+
+{
+  "rules": {
+    ".read": true,
+    ".write": true
+  }
+}
+
+
+users
+  uid
+    name:
+    email:
+    sesipelajar
+      "sesi id"
+        sesi:
+        pelajar
+          "pelajar id"
+            nama:
+            email:
+            ic:
+            jantina:
+            kelulusan:
+            nama_penjaga:
+            tarikh_lahir:
+            telefon:
+            telefon_penjaga:
+            warganegara:
+            kursus
+              nama:
+              kod:
+
+
+
+
+perancangan database
+JSON
+
+users
+  uid
+    name:
+    email: 
+
+    tahap
+      "tahap id"
+        tahap:
+        sijil:
+        penerangan: 
+        kursus
+          "kursus id"
+            nama:
+            kod:
+            tempoh:
+            syarat: can store mutiple using "," for seperation
+            kurikulum: can store mutiple using "," for seperation
+
+    sesipelajar
+      "sesi id"
+        sesi:
+        pelajar
+          "pelajar id"
+            nama:
+            email:
+            ic:
+            jantina:
+            kelulusan:
+            nama_penjaga:
+            tarikh_lahir:
+            telefon:
+            telefon_penjaga:
+            warganegara:
+            kursus
+              nama:
+              kod:
+
+    pemohon (after accept, it will move data to pelajar, can choose sesi before move, if reject just delete)
+      "pemohon id"
+        nama:
+        email:
+        ic:
+        jantina:
+        kelulusan:
+        nama_penjaga:
+        tarikh_lahir:
+        telefon:
+        telefon_penjaga:
+        warganegara:
+        kursus
+          nama:
+          kod:
+
+
+
+
+
+
+
+
+
+
+
+
+
+jangan kacau

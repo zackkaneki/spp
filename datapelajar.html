@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Butiran Pelajar</title>
+    <link rel="stylesheet" href="body.css">
+    <script src="config.js"></script>
+    <style>
+        .container {
+            max-width: 1200px;
+            width: 95%;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group label {
+            display: inline-block;
+            width: 150px;
+            margin-right: 10px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group span, .form-group input, .form-group select {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .form-group span {
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #9b59b6;
+            box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.2);
+        }
+
+        .form-group input[readonly], .form-group select[disabled] {
+            background: #f9f9f9;
+            border-color: #e0e0e0;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #9b59b6;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-cancel {
+            background: #e74c3c;
+        }
+
+        .btn-cancel:hover {
+            background: #c0392b;
+        }
+
+        .btn-save {
+            background: #2ecc71;
+        }
+
+        .btn-save:hover {
+            background: #27ae60;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #ffebee;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .form-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-group label {
+                width: auto;
+                margin-bottom: 5px;
+            }
+
+            .form-group span, .form-group input, .form-group select {
+                width: 100%;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="headercontainer">
+        <header class="header">
+            <div class="logo">Butiran Pelajar</div>
+            <button class="mobile-menu-btn">☰</button>
+            <nav class="nav">
+                <button class="nav-btn" onclick="window.location.href='tahap.html'">Kursus</button>
+                <button class="nav-btn" onclick="window.location.href='sesi.html'">Pelajar</button>
+                <button class="nav-btn" onclick="window.location.href='permohonan.html'">Permohonan</button>
+                <button class="nav-btn" id="logoutBtn">Log Keluar</button>
+            </nav>
+        </header>
+    </div>
+
+    <div class="container">
+        <h2>Butiran Pelajar</h2>
+        <div id="errorMessage" class="error"></div>
+        <form id="pelajarForm">
+            <div class="form-group">
+                <label for="nama">Nama</label>
+                <span id="namaDisplay"></span>
+                <input type="text" id="nama" style="display: none;" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <span id="emailDisplay"></span>
+                <input type="email" id="email" style="display: none;" required>
+            </div>
+            <div class="form-group">
+                <label for="ic">No. Kad Pengenalan</label>
+                <span id="icDisplay"></span>
+                <input type="text" id="ic" style="display: none;" required>
+            </div>
+            <div class="form-group">
+                <label for="jantina">Jantina</label>
+                <span id="jantinaDisplay"></span>
+                <select id="jantina" style="display: none;" required>
+                    <option value="Lelaki">Lelaki</option>
+                    <option value="Perempuan">Perempuan</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="kelulusan">Kelulusan</label>
+                <span id="kelulusanDisplay"></span>
+                <input type="text" id="kelulusan" style="display: none;" required>
+            </div>
+            <div class="form-group">
+                <label for="nama_penjaga">Nama Penjaga</label>
+                <span id="nama_penjagaDisplay"></span>
+                <input type="text" id="nama_penjaga" style="display: none;" required>
+            </div>
+            <div class="form-group">
+                <label for="tarikh_lahir">Tarikh Lahir</label>
+                <span id="tarikh_lahirDisplay"></span>
+                <input type="date" id="tarikh_lahir" style="display: none;" required>
+            </div>
+            <div class="form-group">
+                <label for="telefon">Telefon</label>
+                <span id="telefonDisplay"></span>
+                <input type="tel" id="telefon" style="display: none;" required>
+            </div>
+            <div class="form-group">
+                <label for="telefon_penjaga">Telefon Penjaga</label>
+                <span id="telefon_penjagaDisplay"></span>
+                <input type="tel" id="telefon_penjaga" style="display: none;" required>
+            </div>
+            <div class="form-group">
+                <label for="warganegara">Warganegara</label>
+                <span id="warganegaraDisplay"></span>
+                <select id="warganegara" style="display: none;" required>
+                    <option value="Warganegara Malaysia">Warganegara Malaysia</option>
+                    <option value="Bukan Warganegara">Bukan Warganegara</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="kursus">Kursus</label>
+                <span id="kursusDisplay"></span>
+                <select id="kursus" style="display: none;" required>
+                    <option value="" disabled selected>Pilih kursus</option>
+                </select>
+            </div>
+            <div class="action-buttons" id="actionButtons">
+                <button type="button" class="btn" id="editBtn">Edit</button>
+            </div>
+            <div class="action-buttons" id="editModeButtons" style="display: none;">
+                <button type="submit" class="btn btn-save">Save</button>
+                <button type="button" class="btn btn-cancel" id="cancelEditBtn">Cancel</button>
+                <button type="button" class="btn btn-delete" id="deleteBtn">Delete</button>
+            </div>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, update, remove } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAydlHWbNJ2eRsBJfT3i8g9pq58wXkFTfs",
+            authDomain: "spp-2025-53c5c.firebaseapp.com",
+            projectId: "spp-2025-53c5c",
+            storageBucket: "spp-2025-53c5c.appspot.com",
+            messagingSenderId: "308795708142",
+            appId: "1:308795708142:web:4914dd03f26a6adc4c19ff",
+            databaseURL: "https://spp-2025-53c5c-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        const pelajarForm = document.getElementById('pelajarForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const editBtn = document.getElementById('editBtn');
+        const cancelEditBtn = document.getElementById('cancelEditBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const actionButtons = document.getElementById('actionButtons');
+        const editModeButtons = document.getElementById('editModeButtons');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        let originalData = {};
+
+        // Load pelajar data
+        function loadPelajarData() {
+            const uid = localStorage.getItem('uid');
+            const sesiId = localStorage.getItem('sesiId');
+            const pelajarId = localStorage.getItem('pelajarId');
+            if (!uid || !sesiId || !pelajarId) {
+                errorMessage.textContent = 'Missing required data. Please select a pelajar.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            const pelajarRef = ref(database, `users/${uid}/sesipelajar/${sesiId}/pelajar/${pelajarId}`);
+            onValue(pelajarRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    originalData = data;
+                    displayData(data);
+                } else {
+                    errorMessage.textContent = 'Pelajar not found.';
+                    errorMessage.style.display = 'block';
+                }
+            }, (error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        }
+
+        // Display data in read-only mode
+        function displayData(data) {
+            document.getElementById('namaDisplay').textContent = data.nama;
+            document.getElementById('emailDisplay').textContent = data.email;
+            document.getElementById('icDisplay').textContent = data.ic;
+            document.getElementById('jantinaDisplay').textContent = data.jantina;
+            document.getElementById('kelulusanDisplay').textContent = data.kelulusan;
+            document.getElementById('nama_penjagaDisplay').textContent = data.nama_penjaga;
+            document.getElementById('tarikh_lahirDisplay').textContent = data.tarikh_lahir;
+            document.getElementById('telefonDisplay').textContent = data.telefon;
+            document.getElementById('telefon_penjagaDisplay').textContent = data.telefon_penjaga;
+            document.getElementById('warganegaraDisplay').textContent = data.warganegara;
+            document.getElementById('kursusDisplay').textContent = `${data.kursus.kod} ${data.kursus.nama}`;
+
+            // Set input values for edit mode
+            document.getElementById('nama').value = data.nama;
+            document.getElementById('email').value = data.email;
+            document.getElementById('ic').value = data.ic;
+            document.getElementById('jantina').value = data.jantina;
+            document.getElementById('kelulusan').value = data.kelulusan;
+            document.getElementById('nama_penjaga').value = data.nama_penjaga;
+            document.getElementById('tarikh_lahir').value = data.tarikh_lahir;
+            document.getElementById('telefon').value = data.telefon;
+            document.getElementById('telefon_penjaga').value = data.telefon_penjaga;
+            document.getElementById('warganegara').value = data.warganegara;
+        }
+
+        // Load kursus data for dropdown (used in edit mode)
+        function loadKursusData() {
+            const uid = localStorage.getItem('uid');
+            const tahapRef = ref(database, `users/${uid}/tahap`);
+            const kursusSelect = document.getElementById('kursus');
+            onValue(tahapRef, (snapshot) => {
+                kursusSelect.innerHTML = '<option value="" disabled selected>Pilih kursus</option>';
+                const tahapData = snapshot.val();
+                if (tahapData) {
+                    Object.keys(tahapData).forEach((tahapId) => {
+                        const tahap = tahapData[tahapId];
+                        const kursusData = tahap.kursus;
+                        if (kursusData) {
+                            const optgroup = document.createElement('optgroup');
+                            optgroup.label = tahap.tahap || 'Unnamed Tahap';
+                            Object.keys(kursusData).forEach((kursusId) => {
+                                const kursus = kursusData[kursusId];
+                                const option = document.createElement('option');
+                                option.value = JSON.stringify({ nama: kursus.nama, kod: kursus.kod });
+                                option.textContent = `${kursus.nama} (${kursus.kod})`;
+                                optgroup.appendChild(option);
+                            });
+                            kursusSelect.appendChild(optgroup);
+                        }
+                    });
+                    // Set current kursus value
+                    if (originalData.kursus) {
+                        kursusSelect.value = JSON.stringify({ nama: originalData.kursus.nama, kod: originalData.kursus.kod });
+                    }
+                }
+            }, (error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        }
+
+        // Enter edit mode
+        editBtn.addEventListener('click', () => {
+            toggleEditMode(true);
+        });
+
+        // Cancel edit mode
+        cancelEditBtn.addEventListener('click', () => {
+            toggleEditMode(false);
+            displayData(originalData); // Revert to original data
+        });
+
+        // Toggle between edit and read-only modes
+        function toggleEditMode(isEditMode) {
+            const fields = ['nama', 'email', 'ic', 'jantina', 'kelulusan', 'nama_penjaga', 'tarikh_lahir', 'telefon', 'telefon_penjaga', 'warganegara', 'kursus'];
+            fields.forEach(field => {
+                document.getElementById(`${field}Display`).style.display = isEditMode ? 'none' : 'block';
+                const input = document.getElementById(field);
+                input.style.display = isEditMode ? 'block' : 'none';
+                if (field === 'jantina' || field === 'warganegara' || field === 'kursus') {
+                    input.disabled = !isEditMode;
+                } else {
+                    input.readOnly = !isEditMode;
+                }
+            });
+            actionButtons.style.display = isEditMode ? 'none' : 'flex';
+            editModeButtons.style.display = isEditMode ? 'flex' : 'none';
+        }
+
+        // Save edited data
+        pelajarForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const uid = localStorage.getItem('uid');
+            const sesiId = localStorage.getItem('sesiId');
+            const pelajarId = localStorage.getItem('pelajarId');
+            if (!uid || !sesiId || !pelajarId) {
+                errorMessage.textContent = 'Missing required data.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            const updatedData = {
+                nama: document.getElementById('nama').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                ic: document.getElementById('ic').value.trim(),
+                jantina: document.getElementById('jantina').value,
+                kelulusan: document.getElementById('kelulusan').value.trim(),
+                nama_penjaga: document.getElementById('nama_penjaga').value.trim(),
+                tarikh_lahir: document.getElementById('tarikh_lahir').value,
+                telefon: document.getElementById('telefon').value.trim(),
+                telefon_penjaga: document.getElementById('telefon_penjaga').value.trim(),
+                warganegara: document.getElementById('warganegara').value,
+                kursus: JSON.parse(document.getElementById('kursus').value)
+            };
+
+            const pelajarRef = ref(database, `users/${uid}/sesipelajar/${sesiId}/pelajar/${pelajarId}`);
+            update(pelajarRef, updatedData).then(() => {
+                originalData = updatedData;
+                toggleEditMode(false);
+                alert('Pelajar updated successfully!');
+            }).catch((error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        });
+
+        // Delete pelajar
+        deleteBtn.addEventListener('click', () => {
+            if (!confirm('Are you sure you want to delete this pelajar?')) return;
+            const uid = localStorage.getItem('uid');
+            const sesiId = localStorage.getItem('sesiId');
+            const pelajarId = localStorage.getItem('pelajarId');
+            if (!uid || !sesiId || !pelajarId) {
+                errorMessage.textContent = 'Missing required data.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            const pelajarRef = ref(database, `users/${uid}/sesipelajar/${sesiId}/pelajar/${pelajarId}`);
+            remove(pelajarRef).then(() => {
+                localStorage.removeItem('pelajarId');
+                alert('Pelajar deleted successfully!');
+                window.location.href = 'pelajar.html';
+            }).catch((error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        });
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                localStorage.removeItem('uid');
+                localStorage.removeItem('tahapId');
+                localStorage.removeItem('sesiId');
+                localStorage.removeItem('pelajarId');
+                window.location.href = 'sign.html';
+            }).catch((error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        });
+
+        // Initialize mobile menu
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.querySelector('.nav').classList.toggle('active');
+        });
+
+        // Load data on page load
+        loadPelajarData();
+        loadKursusData();
+    </script>
+</body>
+</html>

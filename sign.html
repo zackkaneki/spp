@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In / Sign Up</title>
+  <link rel="stylesheet" href="body.css">
+  <style>
+
+    body {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .container {
+      max-width: 500px;
+      width: 95%;
+      background: #fff;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .container h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #555;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      border-color: #9b59b6;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background: #9b59b6;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .btn:hover {
+      background: #8e44ad;
+    }
+
+    .toggle {
+      text-align: center;
+      margin-top: 15px;
+      color: #555;
+    }
+
+    .toggle a {
+      color: #9b59b6;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .toggle a:hover {
+      text-decoration: underline;
+    }
+
+    .error {
+      color: #e74c3c;
+      text-align: center;
+      margin-bottom: 15px;
+      display: none;
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        margin: 20px;
+        padding: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2 id="formTitle">Sign In</h2>
+    <div id="errorMessage" class="error"></div>
+    <form id="authForm">
+      <div class="form-group" id="nameGroup">
+        <label for="name">Name</label>
+        <input type="text" id="name" placeholder="Enter your name">
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="Enter your email" required>
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Enter your password" required>
+      </div>
+      <button type="submit" class="btn" id="submitBtn">Sign In</button>
+    </form>
+    <div class="toggle">
+      <p id="toggleText">Need an account? <a href="#" id="toggleLink">Sign Up</a></p>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAydlHWbNJ2eRsBJfT3i8g9pq58wXkFTfs",
+      authDomain: "spp-2025-53c5c.firebaseapp.com",
+      projectId: "spp-2025-53c5c",
+      storageBucket: "spp-2025-53c5c.appspot.com",
+      messagingSenderId: "308795708142",
+      appId: "1:308795708142:web:4914dd03f26a6adc4c19ff",
+      databaseURL: "https://spp-2025-53c5c-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const database = getDatabase(app);
+
+    const authForm = document.getElementById('authForm');
+    const nameInput = document.getElementById('name');
+    const nameGroup = document.getElementById('nameGroup');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const submitBtn = document.getElementById('submitBtn');
+    const formTitle = document.getElementById('formTitle');
+    const toggleText = document.getElementById('toggleText');
+    const toggleLink = document.getElementById('toggleLink');
+    const errorMessage = document.getElementById('errorMessage');
+
+    let isSignUp = false;
+
+    // Initial form state: Sign In
+    formTitle.textContent = 'Sign In';
+    submitBtn.textContent = 'Sign In';
+    nameGroup.style.display = 'none';
+    toggleText.childNodes[0].textContent = 'Need an account? ';
+    toggleLink.textContent = 'Sign Up';
+
+    toggleLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      isSignUp = !isSignUp;
+
+      formTitle.textContent = isSignUp ? 'Sign Up' : 'Sign In';
+      submitBtn.textContent = isSignUp ? 'Sign Up' : 'Sign In';
+      nameGroup.style.display = isSignUp ? 'block' : 'none';
+      nameInput.required = isSignUp;
+      toggleText.childNodes[0].textContent = isSignUp 
+        ? 'Already have an account? ' 
+        : 'Need an account? ';
+      toggleLink.textContent = isSignUp ? 'Sign In' : 'Sign Up';
+      errorMessage.style.display = 'none';
+    });
+
+    authForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value.trim();
+
+      errorMessage.style.display = 'none';
+
+      if (isSignUp) {
+        createUserWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            return set(ref(database, 'users/' + user.uid), {
+              name: name,
+              email: email
+            }).then(() => {
+              localStorage.setItem('uid', user.uid);
+              alert('Sign Up successful!');
+              authForm.reset();
+            });
+          })
+          .catch((error) => {
+            errorMessage.textContent = error.message;
+            errorMessage.style.display = 'block';
+          });
+      } else {
+        signInWithEmailAndPassword(auth, email, password)
+          .then((userCredential) => {
+            const user = userCredential.user;
+            localStorage.setItem('uid', user.uid);
+            window.location.href = 'index.html';
+          })
+          .catch((error) => {
+            errorMessage.textContent = error.message;
+            errorMessage.style.display = 'block';
+          });
+      }
+    });
+  </script>
+</body>
+</html>

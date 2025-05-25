@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="body.css">
+    <script src="config.js"></script>
+</head>
+<body>
+    <div class="headercontainer">
+        <header class="header">
+            <div class="logo">Dashboard</div>
+            <button class="mobile-menu-btn">☰</button>
+            <nav class="nav">
+                <button class="nav-btn" onclick="window.location.href='tahap.html'">Kursus</button>
+                <button class="nav-btn" onclick="window.location.href='sesi.html'">Pelajar</button>
+                <button class="nav-btn" onclick="window.location.href='permohonan.html'">Permohonan</button>
+                <button class="nav-btn" onclick="window.location.href='sign.html'">Log Keluar</button>
+            </nav>
+        </header>
+    </div>
+
+    <div class="maincontainer">
+        
+    </div>
+
+    <script>
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.querySelector('.nav').classList.toggle('active');
+        });
+    </script>
+</body>
+</html>

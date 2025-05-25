@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tahap</title>
+    <link rel="stylesheet" href="body.css">
+    <script src="config.js"></script>
+    <style>
+        .container {
+            max-width: 1200px;
+            width: 95%;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container {
+            display: none;
+            margin-top: 20px;
+        }
+        .form-container.show {
+            display: block;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus, .form-group textarea:focus {
+            border-color: #9b59b6;
+            box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.2);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #9b59b6;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-cancel {
+            background: #e74c3c;
+        }
+
+        .btn-cancel:hover {
+            background: #c0392b;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f5f0ff;
+            color: #5d3a9e;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+
+
+        tr {
+            transition: background 0.2s;
+        }
+
+        tr:hover {
+            background: #f9f5ff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        tr:nth-child(even):hover {
+            background-color: #f5f0ff;
+        }
+
+        .edit-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        .edit-textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            resize: vertical;
+            box-sizing: border-box;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #ffebee;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-edit {
+            background: #3498db;
+        }
+
+        .btn-edit:hover {
+            background: #2980b9;
+        }
+
+        .btn-save {
+            background: #2ecc71;
+        }
+
+        .btn-save:hover {
+            background: #27ae60;
+        }
+
+        .scrollable-cell {
+            max-width: 150px;
+            overflow: auto;
+            white-space: nowrap;
+        }
+
+        .scrollable-textarea {
+            max-width: 250px;
+            overflow: auto;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+            
+            .btn {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="headercontainer">
+        <header class="header">
+            <div class="logo">Tahap</div>
+            <button class="mobile-menu-btn">☰</button>
+            <nav class="nav">
+                <button class="nav-btn" onclick="window.location.href='tahap.html'">Kursus</button>
+                <button class="nav-btn" onclick="window.location.href='sesi.html'">Pelajar</button>
+                <button class="nav-btn" onclick="window.location.href='permohonan.html'">Permohonan</button>
+                <button class="nav-btn" id="logoutBtn">Log Keluar</button>
+            </nav>
+        </header>
+    </div>
+
+    <div class="container">
+        <h2>Senarai Tahap</h2>
+        <button class="btn" id="toggleFormBtn">Tambah Tahap</button>
+        <div id="formContainer" class="form-container">
+            <h2>Tambah Tahap</h2>
+            <div id="errorMessage" class="error"></div>
+            <form id="tahapForm">
+                <div class="form-group">
+                    <label for="tahap">Tahap</label>
+                    <input type="text" id="tahap" placeholder="Masukkan nama tahap" required>
+                </div>
+                <div class="form-group">
+                    <label for="sijil">Sijil</label>
+                    <input type="text" id="sijil" placeholder="Masukkan sijil" required>
+                </div>
+                <div class="form-group">
+                    <label for="penerangan">Penerangan</label>
+                    <textarea id="penerangan" placeholder="Masukkan penerangan" required></textarea>
+                </div>
+                <div class="action-buttons">
+                    <button type="submit" class="btn">Tambah Tahap</button>
+                    <button type="button" class="btn btn-cancel" id="cancelBtn">Batal</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-responsive">
+            <table id="tahapTable">
+                <thead>
+                    <tr>
+                        <th>Bil</th>
+                        <th>Tahap</th>
+                        <th>Sijil</th>
+                        <th>Penerangan</th>
+                        <th>Tindakan</th>
+                    </tr>
+                </thead>
+                <tbody id="tahapTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+        import { getDatabase, ref, set, onValue, update, push, remove } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAydlHWbNJ2eRsBJfT3i8g9pq58wXkFTfs",
+            authDomain: "spp-2025-53c5c.firebaseapp.com",
+            projectId: "spp-2025-53c5c",
+            storageBucket: "spp-2025-53c5c.appspot.com",
+            messagingSenderId: "308795708142",
+            appId: "1:308795708142:web:4914dd03f26a6adc4c19ff",
+            databaseURL: "https://spp-2025-53c5c-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        const tahapForm = document.getElementById('tahapForm');
+        const tahapTableBody = document.getElementById('tahapTableBody');
+        const errorMessage = document.getElementById('errorMessage');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const toggleFormBtn = document.getElementById('toggleFormBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const formContainer = document.getElementById('formContainer');
+
+        // Toggle form visibility
+        toggleFormBtn.addEventListener('click', () => {
+            formContainer.classList.toggle('show');
+            tahapForm.reset(); // Reset form when showing
+            errorMessage.style.display = 'none'; // Hide error message
+        });
+
+        // Cancel button to hide form
+        cancelBtn.addEventListener('click', () => {
+            formContainer.classList.remove('show');
+            tahapForm.reset(); // Reset form when canceling
+            errorMessage.style.display = 'none'; // Hide error message
+        });
+
+        // Load tahap data
+        function loadTahapData() {
+            const uid = localStorage.getItem('uid');
+            const tahapRef = ref(database, `users/${uid}/tahap`);
+            onValue(tahapRef, (snapshot) => {
+                tahapTableBody.innerHTML = '';
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).forEach((tahapId, index) => {
+                        const tahapData = data[tahapId];
+                        const row = document.createElement('tr');
+                        row.dataset.tahapId = tahapId;
+                        row.innerHTML = `
+                            <td>${index + 1}</td>
+                            <td class="tahap-cell">${tahapData.tahap}</td>
+                            <td class="sijil-cell">${tahapData.sijil}</td>
+                            <td class="penerangan-cell">${tahapData.penerangan}</td>
+                            <td class="action-buttons">
+                                <button class="btn edit-btn">Edit</button>
+                                <button class="btn save-btn" style="display: none;">Save</button>
+                                <button class="btn btn-delete delete-btn" style="display: none;">Delete</button>
+                            </td>
+                        `;
+                        tahapTableBody.appendChild(row);
+                    });
+                }
+            });
+        }
+
+        // Create new tahap
+        tahapForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const tahap = document.getElementById('tahap').value.trim();
+            const sijil = document.getElementById('sijil').value.trim();
+            const penerangan = document.getElementById('penerangan').value.trim();
+            const uid = localStorage.getItem('uid');
+            const tahapRef = ref(database, `users/${uid}/tahap`);
+            const newTahapRef = push(tahapRef);
+
+            set(newTahapRef, {
+                tahap,
+                sijil,
+                penerangan
+            }).then(() => {
+                tahapForm.reset();
+                formContainer.classList.remove('show'); // Hide form after submission
+                alert('Tahap created successfully!');
+            }).catch((error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        });
+
+        // Edit/Save/Delete and row click functionality
+        tahapTableBody.addEventListener('click', (e) => {
+            const row = e.target.closest('tr');
+            if (!row) return;
+
+            const tahapId = row.dataset.tahapId;
+            const editBtn = row.querySelector('.edit-btn');
+            const saveBtn = row.querySelector('.save-btn');
+            const deleteBtn = row.querySelector('.delete-btn');
+
+            if (e.target.classList.contains('edit-btn')) {
+                // Enter edit mode
+                const tahapCell = row.querySelector('.tahap-cell');
+                const sijilCell = row.querySelector('.sijil-cell');
+                const peneranganCell = row.querySelector('.penerangan-cell');
+
+                tahapCell.innerHTML = `<input type="text" class="edit-input tahap-input" value="${tahapCell.textContent}">`;
+                sijilCell.innerHTML = `<input type="text" class="edit-input sijil-input" value="${sijilCell.textContent}">`;
+                peneranganCell.innerHTML = `<textarea class="edit-input penerangan-input">${peneranganCell.textContent}</textarea>`;
+                editBtn.style.display = 'none';
+                saveBtn.style.display = 'inline-block';
+                deleteBtn.style.display = 'inline-block';
+            } else if (e.target.classList.contains('save-btn')) {
+                // Save changes
+                const tahapInput = row.querySelector('.tahap-input').value.trim();
+                const sijilInput = row.querySelector('.sijil-input').value.trim();
+                const peneranganInput = row.querySelector('.penerangan-input').value.trim();
+                const uid = localStorage.getItem('uid');
+
+                update(ref(database, `users/${uid}/tahap/${tahapId}`), {
+                    tahap: tahapInput,
+                    sijil: sijilInput,
+                    penerangan: peneranganInput
+                }).then(() => {
+                    alert('Tahap updated successfully!');
+                    loadTahapData(); // Reload to refresh table
+                }).catch((error) => {
+                    errorMessage.textContent = error.message;
+                    errorMessage.style.display = 'block';
+                });
+            } else if (e.target.classList.contains('delete-btn')) {
+                // Delete tahap
+                if (confirm('Are you sure you want to delete this tahap?')) {
+                    const uid = localStorage.getItem('uid');
+                    const tahapRef = ref(database, `users/${uid}/tahap/${tahapId}`);
+                    remove(tahapRef).then(() => {
+                        alert('Tahap deleted successfully!');
+                        loadTahapData(); // Reload to refresh table
+                    }).catch((error) => {
+                        errorMessage.textContent = error.message;
+                        errorMessage.style.display = 'block';
+                    });
+                }
+            } else if (!e.target.closest('.btn') && saveBtn.style.display === 'none') {
+                // Redirect to kursus.html only if not in edit mode
+                localStorage.setItem('tahapId', tahapId);
+                window.location.href = 'kursus.html';
+            }
+        });
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                localStorage.removeItem('uid');
+                window.location.href = 'sign.html';
+            }).catch((error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        });
+
+        // Initialize mobile menu
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.querySelector('.nav').classList.toggle('active');
+        });
+
+        // Load tahap data on page load
+        loadTahapData();
+    </script>
+</body>
+</html>

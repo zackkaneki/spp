@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Butiran Pemohon</title>
+    <link rel="stylesheet" href="body.css">
+    <script src="config.js"></script>
+    <style>
+        .container {
+            max-width: 1200px;
+            width: 95%;
+            margin: 20px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .form-group label {
+            display: inline-block;
+            width: 150px;
+            margin-right: 10px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group span {
+            flex: 1;
+            padding: 10px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background: #9b59b6;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            margin-right: 10px;
+        }
+
+        .btn:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-accept {
+            background: #2ecc71;
+        }
+
+        .btn-accept:hover {
+            background: #27ae60;
+        }
+
+        .btn-reject {
+            background: #e74c3c;
+        }
+
+        .btn-reject:hover {
+            background: #c0392b;
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #ffebee;
+            border-radius: 5px;
+            display: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 300px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal-content select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .modal-content .btn {
+            margin: 0 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .form-group {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-group label {
+                width: auto;
+                margin-bottom: 5px;
+            }
+
+            .form-group span {
+                width: 100%;
+            }
+
+            .btn {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+
+            .modal-content {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="headercontainer">
+        <header class="header">
+            <div class="logo">Butiran Pemohon</div>
+            <button class="mobile-menu-btn">☰</button>
+            <nav class="nav">
+                <button class="nav-btn" onclick="window.location.href='tahap.html'">Kursus</button>
+                <button class="nav-btn" onclick="window.location.href='sesi.html'">Pelajar</button>
+                <button class="nav-btn" onclick="window.location.href='permohonan.html'">Permohonan</button>
+                <button class="nav-btn" id="logoutBtn">Log Keluar</button>
+            </nav>
+        </header>
+    </div>
+
+    <div class="container">
+        <h2>Butiran Pemohon</h2>
+        <div id="errorMessage" class="error"></div>
+        <div id="pemohonDetails">
+            <div class="form-group">
+                <label>Nama:</label>
+                <span id="namaSpan"></span>
+            </div>
+            <div class="form-group">
+                <label>Email:</label>
+                <span id="emailSpan"></span>
+            </div>
+            <div class="form-group">
+                <label>No. Kad Pengenalan:</label>
+                <span id="icSpan"></span>
+            </div>
+            <div class="form-group">
+                <label>Jantina:</label>
+                <span id="jantinaSpan"></span>
+            </div>
+            <div class="form-group">
+                <label>Kelulusan:</label>
+                <span id="kelulusanSpan"></span>
+            </div>
+            <div class="form-group">
+                <label>Nama Penjaga:</label>
+                <span id="namaPenjagaSpan"></span>
+            </div>
+            <div class="form-group">
+                <label>Tarikh Lahir:</label>
+                <span id="tarikhLahirSpan"></span>
+            </div>
+            <div class="form-group">
+                <label>Telefon:</label>
+                <span id="telefonSpan"></span>
+            </div>
+            <div class="form-group">
+                <label>Telefon Penjaga:</label>
+                <span id="telefonPenjagaSpan"></span>
+            </div>
+            <div class="form-group">
+                <label>Warganegara:</label>
+                <span id="warganegaraSpan"></span>
+            </div>
+            <div class="form-group">
+                <label>Kursus:</label>
+                <span id="kursusSpan"></span>
+            </div>
+        </div>
+        <div class="action-buttons">
+            <button type="button" class="btn btn-accept" id="acceptBtn">Accept</button>
+            <button type="button" class="btn btn-reject" id="rejectBtn">Reject</button>
+        </div>
+        <div id="sesiModal" class="modal">
+            <div class="modal-content">
+                <h3>Pilih Sesi</h3>
+                <select id="sesiSelect" required>
+                    <option value="" disabled selected>Pilih sesi</option>
+                </select>
+                <div class="action-buttons">
+                    <button type="button" class="btn btn-accept" id="confirmSesiBtn">Confirm</button>
+                    <button type="button" class="btn btn-reject" id="cancelSesiBtn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-app.js";
+        import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-auth.js";
+        import { getDatabase, ref, onValue, remove, push, set } from "https://www.gstatic.com/firebasejs/11.8.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAydlHWbNJ2eRsBJfT3i8g9pq58wXkFTfs",
+            authDomain: "spp-2025-53c5c.firebaseapp.com",
+            projectId: "spp-2025-53c5c",
+            storageBucket: "spp-2025-53c5c.appspot.com",
+            messagingSenderId: "308795708142",
+            appId: "1:308795708142:web:4914dd03f26a6adc4c19ff",
+            databaseURL: "https://spp-2025-53c5c-default-rtdb.asia-southeast1.firebasedatabase.app"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+
+        const errorMessage = document.getElementById('errorMessage');
+        const acceptBtn = document.getElementById('acceptBtn');
+        const rejectBtn = document.getElementById('rejectBtn');
+        const sesiModal = document.getElementById('sesiModal');
+        const sesiSelect = document.getElementById('sesiSelect');
+        const confirmSesiBtn = document.getElementById('confirmSesiBtn');
+        const cancelSesiBtn = document.getElementById('cancelSesiBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        let pemohonData = {};
+
+        // Load pemohon data
+        function loadPemohonData() {
+            const uid = localStorage.getItem('uid');
+            const pemohonId = localStorage.getItem('pemohonId');
+            if (!uid || !pemohonId) {
+                errorMessage.textContent = 'Missing required data. Please select a pemohon.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            const pemohonRef = ref(database, `users/${uid}/pemohon/${pemohonId}`);
+            onValue(pemohonRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    pemohonData = data;
+                    displayData(data);
+                } else {
+                    errorMessage.textContent = 'Pemohon not found.';
+                    errorMessage.style.display = 'block';
+                }
+            }, (error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        }
+
+        // Display data
+        function displayData(data) {
+            document.getElementById('namaSpan').textContent = data.nama || 'N/A';
+            document.getElementById('emailSpan').textContent = data.email || 'N/A';
+            document.getElementById('icSpan').textContent = data.ic || 'N/A';
+            document.getElementById('jantinaSpan').textContent = data.jantina || 'N/A';
+            document.getElementById('kelulusanSpan').textContent = data.kelulusan || 'N/A';
+            document.getElementById('namaPenjagaSpan').textContent = data.nama_penjaga || 'N/A';
+            document.getElementById('tarikhLahirSpan').textContent = data.tarikh_lahir || 'N/A';
+            document.getElementById('telefonSpan').textContent = data.telefon || 'N/A';
+            document.getElementById('telefonPenjagaSpan').textContent = data.telefon_penjaga || 'N/A';
+            document.getElementById('warganegaraSpan').textContent = data.warganegara || 'N/A';
+            document.getElementById('kursusSpan').textContent = data.kursus ? `${data.kursus.kod || 'N/A'} ${data.kursus.nama || 'N/A'}` : 'No Kursus';
+        }
+
+        // Load sesi data for modal
+        function loadSesiData() {
+            const uid = localStorage.getItem('uid');
+            const sesiRef = ref(database, `users/${uid}/sesipelajar`);
+            onValue(sesiRef, (snapshot) => {
+                sesiSelect.innerHTML = '<option value="" disabled selected>Pilih sesi</option>';
+                const sesiData = snapshot.val();
+                if (sesiData) {
+                    Object.entries(sesiData).forEach(([sesiId, sesi]) => {
+                        const option = document.createElement('option');
+                        option.value = sesiId;
+                        option.textContent = sesi.sesi || 'Unnamed Sesi';
+                        sesiSelect.appendChild(option);
+                    });
+                }
+            }, (error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        }
+
+        // Accept button
+        acceptBtn.addEventListener('click', () => {
+            sesiModal.style.display = 'flex';
+        });
+
+        // Confirm sesi selection
+        confirmSesiBtn.addEventListener('click', () => {
+            const sesiId = sesiSelect.value;
+            if (!sesiId) {
+                errorMessage.textContent = 'Please select a sesi.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            const uid = localStorage.getItem('uid');
+            const pemohonId = localStorage.getItem('pemohonId');
+            if (!uid || !pemohonId) {
+                errorMessage.textContent = 'Missing required data.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            const pelajarRef = ref(database, `users/${uid}/sesipelajar/${sesiId}/pelajar`);
+            const newPelajarRef = push(pelajarRef);
+            const pemohonRef = ref(database, `users/${uid}/pemohon/${pemohonId}`);
+
+            set(newPelajarRef, pemohonData).then(() => {
+                return remove(pemohonRef);
+            }).then(() => {
+                localStorage.removeItem('pemohonId');
+                sesiModal.style.display = 'none';
+                alert('Pemohon accepted!');
+                window.location.href = 'pelajar.html';
+            }).catch((error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        });
+
+        // Cancel sesi selection
+        cancelSesiBtn.addEventListener('click', () => {
+            sesiModal.style.display = 'none';
+            sesiSelect.value = '';
+        });
+
+        // Reject button
+        rejectBtn.addEventListener('click', () => {
+            if (!confirm('Are you sure you want to reject and delete this pemohon?')) return;
+            const uid = localStorage.getItem('uid');
+            const pemohonId = localStorage.getItem('pemohonId');
+            if (!uid || !pemohonId) {
+                errorMessage.textContent = 'Missing required data.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            const pemohonRef = ref(database, `users/${uid}/pemohon/${pemohonId}`);
+            remove(pemohonRef).then(() => {
+                localStorage.removeItem('pemohonId');
+                alert('Pemohon rejected and deleted successfully!');
+                window.location.href = 'permohonan.html';
+            }).catch((error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        });
+
+        // Logout
+        logoutBtn.addEventListener('click', () => {
+            signOut(auth).then(() => {
+                localStorage.removeItem('uid');
+                localStorage.removeItem('tahapId');
+                localStorage.removeItem('sesiId');
+                localStorage.removeItem('pelajarId');
+                localStorage.removeItem('pemohonId');
+                window.location.href = 'sign.html';
+            }).catch((error) => {
+                errorMessage.textContent = error.message;
+                errorMessage.style.display = 'block';
+            });
+        });
+
+        // Mobile menu
+        document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
+            document.querySelector('.nav').classList.toggle('active');
+        });
+
+        // Load data on page load
+        loadPemohonData();
+        loadSesiData();
+    </script>
+</body>
+</html>
