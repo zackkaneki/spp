@@ -293,7 +293,7 @@
         <div class="filter-group">
             <label for="filterKursus">Filter by Kursus:</label>
             <select id="filterKursus">
-                <option value="all">All Courses</option>
+                <option value="all">SEMUA KURSUS</option>
             </select>
         </div>
 
@@ -363,7 +363,7 @@
             const tahapRef = ref(database, `users/${uid}/tahap`);
             onValue(tahapRef, (snapshot) => {
                 kursusSelect.innerHTML = '<option value="" disabled selected>Pilih kursus</option>';
-                filterKursus.innerHTML = '<option value="all">All Courses</option>';
+                filterKursus.innerHTML = '<option value="all">SEMUA KURSUS</option>';
                 const tahapData = snapshot.val();
                 if (tahapData) {
                     Object.keys(tahapData).forEach((tahapId) => {
