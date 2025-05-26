@@ -6,29 +6,54 @@
     <title>Dashboard</title>
     <link rel="stylesheet" href="body.css">
     <script src="config.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .maincontainer {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            width: 90%;
+            max-width: 400px;
+        }
+
+        .maincontainer button {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .maincontainer button:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
-    <div class="headercontainer">
-        <header class="header">
-            <div class="logo">Dashboard</div>
-            <button class="mobile-menu-btn">☰</button>
-            <nav class="nav">
-                <button class="nav-btn" onclick="window.location.href='tahap.html'">Kursus</button>
-                <button class="nav-btn" onclick="window.location.href='sesi.html'">Pelajar</button>
-                <button class="nav-btn" onclick="window.location.href='permohonan.html'">Permohonan</button>
-                <button class="nav-btn" onclick="window.location.href='sign.html'">Log Keluar</button>
-            </nav>
-        </header>
-    </div>
-
     <div class="maincontainer">
-        
+        <button onclick="window.location.href='tahap.html'">Kursus</button>
+        <button onclick="window.location.href='sesi.html'">Pelajar</button>
+        <button onclick="window.location.href='permohonan.html'">Permohonan</button>
+        <button onclick="window.location.href='sign.html'">Log Keluar</button>
     </div>
-
-    <script>
-        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
-            document.querySelector('.nav').classList.toggle('active');
-        });
-    </script>
 </body>
 </html>
