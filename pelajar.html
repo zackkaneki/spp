@@ -159,6 +159,33 @@
             white-space: nowrap;
         }
 
+        .filter-group {
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .filter-group label {
+            display: inline-block;
+            margin-right: 10px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .filter-group select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+            min-width: 200px;
+        }
+
+        .filter-group select:focus {
+            border-color: #9b59b6;
+            box-shadow: 0 0 0 2px rgba(155, 89, 182, 0.2);
+        }
+
         @media (max-width: 768px) {
             .container {
                 padding: 15px;
@@ -172,6 +199,11 @@
             .btn {
                 padding: 8px 12px;
                 font-size: 14px;
+            }
+
+            .filter-group select {
+                width: 100%;
+                min-width: auto;
             }
         }
     </style>
@@ -258,6 +290,13 @@
             </form>
         </div>
 
+        <div class="filter-group">
+            <label for="filterKursus">Filter by Kursus:</label>
+            <select id="filterKursus">
+                <option value="all">All Courses</option>
+            </select>
+        </div>
+
         <div class="table-responsive">
             <table id="pelajarTable">
                 <thead>
@@ -295,11 +334,14 @@
         const pelajarForm = document.getElementById('pelajarForm');
         const pelajarTableBody = document.getElementById('pelajarTableBody');
         const kursusSelect = document.getElementById('kursus');
+        const filterKursus = document.getElementById('filterKursus');
         const errorMessage = document.getElementById('errorMessage');
         const logoutBtn = document.getElementById('logoutBtn');
         const toggleFormBtn = document.getElementById('toggleFormBtn');
         const cancelBtn = document.getElementById('cancelBtn');
         const formContainer = document.getElementById('formContainer');
+
+        let allPelajarData = {};
 
         // Toggle form visibility
         toggleFormBtn.addEventListener('click', () => {
@@ -315,26 +357,35 @@
             errorMessage.style.display = 'none'; // Hide error message
         });
 
-        // Load kursus data for dropdown
+        // Load kursus data for form and filter dropdowns
         function loadKursusData() {
             const uid = localStorage.getItem('uid');
             const tahapRef = ref(database, `users/${uid}/tahap`);
             onValue(tahapRef, (snapshot) => {
                 kursusSelect.innerHTML = '<option value="" disabled selected>Pilih kursus</option>';
+                filterKursus.innerHTML = '<option value="all">All Courses</option>';
                 const tahapData = snapshot.val();
                 if (tahapData) {
                     Object.keys(tahapData).forEach((tahapId) => {
                         const tahap = tahapData[tahapId];
                         const kursusData = tahap.kursus;
                         if (kursusData) {
+                            // Form dropdown (optgroup)
                             const optgroup = document.createElement('optgroup');
                             optgroup.label = tahap.tahap || 'Unnamed Tahap';
+                            // Filter dropdown
                             Object.keys(kursusData).forEach((kursusId) => {
                                 const kursus = kursusData[kursusId];
-                                const option = document.createElement('option');
-                                option.value = JSON.stringify({ nama: kursus.nama, kod: kursus.kod });
-                                option.textContent = `${kursus.nama} (${kursus.kod})`;
-                                optgroup.appendChild(option);
+                                // Form option
+                                const formOption = document.createElement('option');
+                                formOption.value = JSON.stringify({ nama: kursus.nama, kod: kursus.kod });
+                                formOption.textContent = `${kursus.nama} (${kursus.kod})`;
+                                optgroup.appendChild(formOption);
+                                // Filter option
+                                const filterOption = document.createElement('option');
+                                filterOption.value = JSON.stringify({ nama: kursus.nama, kod: kursus.kod });
+                                filterOption.textContent = `${kursus.nama} (${kursus.kod})`;
+                                filterKursus.appendChild(filterOption);
                             });
                             kursusSelect.appendChild(optgroup);
                         }
@@ -357,26 +408,45 @@
             }
             const pelajarRef = ref(database, `users/${uid}/sesipelajar/${sesiId}/pelajar`);
             onValue(pelajarRef, (snapshot) => {
-                pelajarTableBody.innerHTML = '';
-                const data = snapshot.val();
-                if (data) {
-                    Object.keys(data).forEach((pelajarId, index) => {
-                        const pelajarData = data[pelajarId];
-                        const row = document.createElement('tr');
-                        row.dataset.pelajarId = pelajarId;
-                        row.innerHTML = `
-                            <td>${index + 1}</td>
-                            <td class="scrollable-cell">${pelajarData.nama}</td>
-                            <td class="scrollable-cell">${pelajarData.ic}</td>
-                            <td class="scrollable-cell">${pelajarData.kursus.kod} ${pelajarData.kursus.nama}</td>
-                        `;
-                        pelajarTableBody.appendChild(row);
-                    });
-                }
+                allPelajarData = snapshot.val() || {};
+                filterPelajar(); // Apply filter on data load
             }, (error) => {
                 errorMessage.textContent = error.message;
                 errorMessage.style.display = 'block';
             });
+        }
+
+        // Filter pelajar based on selected kursus
+        function filterPelajar() {
+            const selectedKursus = filterKursus.value;
+            pelajarTableBody.innerHTML = '';
+            let filteredData = allPelajarData;
+
+            if (selectedKursus !== 'all') {
+                const kursus = JSON.parse(selectedKursus);
+                filteredData = Object.fromEntries(
+                    Object.entries(allPelajarData).filter(([_, pelajar]) =>
+                        pelajar.kursus.kod === kursus.kod && pelajar.kursus.nama === kursus.nama
+                    )
+                );
+            }
+
+            if (Object.keys(filteredData).length > 0) {
+                Object.keys(filteredData).forEach((pelajarId, index) => {
+                    const pelajarData = filteredData[pelajarId];
+                    const row = document.createElement('tr');
+                    row.dataset.pelajarId = pelajarId;
+                    row.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td class="scrollable-cell">${pelajarData.nama || 'N/A'}</td>
+                        <td class="scrollable-cell">${pelajarData.ic || 'N/A'}</td>
+                        <td class="scrollable-cell">${pelajarData.kursus ? `${pelajarData.kursus.kod || 'N/A'} ${pelajarData.kursus.nama || 'N/A'}` : 'No Kursus'}</td>
+                    `;
+                    pelajarTableBody.appendChild(row);
+                });
+            } else {
+                pelajarTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No pelajar found.</td></tr>';
+            }
         }
 
         // Create new pelajar
@@ -429,6 +499,9 @@
             });
         });
 
+        // Filter kursus change event
+        filterKursus.addEventListener('change', filterPelajar);
+
         // Row click to redirect to datapelajar.html
         pelajarTableBody.addEventListener('click', (e) => {
             const row = e.target.closest('tr');
@@ -446,6 +519,7 @@
                 localStorage.removeItem('tahapId');
                 localStorage.removeItem('sesiId');
                 localStorage.removeItem('pelajarId');
+                localStorage.removeItem('pemohonId');
                 window.location.href = 'sign.html';
             }).catch((error) => {
                 errorMessage.textContent = error.message;
